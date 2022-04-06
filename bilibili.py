@@ -30,6 +30,7 @@ def bilibili_download(url):
     inf = re.findall(r'__INITIAL_STATE__=(.*?)\;\(function', response)[0]
     date_json = json.loads(date)
     inf_json = json.loads(inf)
+    bvid = inf_json['videoData']['bvid']
     title = inf_json['videoData']['title']
     video_url = date_json['data']['dash']['video'][0]['baseUrl']
     audio_url = date_json['data']['dash']['audio'][0]['baseUrl']
@@ -37,15 +38,16 @@ def bilibili_download(url):
         "GET", video_url, headers=headers).content
     audio_response = requests.request(
         "GET", audio_url, headers=headers).content
-    with open('./{title}_video.mp4'.format(title=title), 'wb') as video_file:
+    with open('./{bvid}_video.mp4'.format(bvid=bvid), 'wb') as video_file:
         video_file.write(video_response)
-    with open('./{title}_audio.m4a'.format(title=title), 'wb') as audio_file:
+    with open('./{bvid}_audio.m4a'.format(bvid=bvid), 'wb') as audio_file:
         audio_file.write(audio_response)
     p = subprocess.Popen(
-        "ffmpeg -i {title}_video.mp4 -i {title}_audio.m4a -vcodec copy -acodec copy {title}.mp4".format(title=title))
+        "ffmpeg -i {bvid}_video.mp4 -i {bvid}_audio.m4a -vcodec copy -acodec copy {bvid}.mp4".format(bvid=bvid))
     if p.wait() == 0:
-        os.unlink('./{title}_video.mp4'.format(title=title))
-        os.unlink('./{title}_audio.m4a'.format(title=title))
+        os.unlink('./{bvid}_video.mp4'.format(bvid=bvid))
+        os.unlink('./{bvid}_audio.m4a'.format(bvid=bvid))
+        os.rename('./{bvid}.mp4'.format(bvid=bvid), './{title}.mp4'.format(title=title))
 
 
 if __name__ == '__main__':
