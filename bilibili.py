@@ -30,8 +30,11 @@ def bilibili_download(url):
     inf = re.findall(r'__INITIAL_STATE__=(.*?)\;\(function', response)[0]
     date_json = json.loads(date)
     inf_json = json.loads(inf)
+    # pprint(inf_json['videoData'])
     bvid = inf_json['videoData']['bvid']
     title = inf_json['videoData']['title']
+    if '/' in title:
+        title = title.replace("/"," ")
     video_url = date_json['data']['dash']['video'][0]['baseUrl']
     audio_url = date_json['data']['dash']['audio'][0]['baseUrl']
     video_response = requests.request(
